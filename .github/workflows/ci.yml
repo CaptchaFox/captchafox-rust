@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests (Rust ${{ matrix.rust }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The oldest supported Rust, with the newest versions of the dependencies that still support it.
+          - rust: '1.85.0'
+            resolve: fallback
+          # The latest stable, with the newest versions of the dependencies, as a new project gets them.
+          - rust: stable
+            resolve: allow
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Rust
+        run: |
+          rustup toolchain install "${{ matrix.rust }}" --profile minimal --no-self-update
+          rustup default "${{ matrix.rust }}"
+
+      - name: Test
+        env:
+          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: ${{ matrix.resolve }}
+        run: cargo test
