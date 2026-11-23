@@ -1,0 +1,25 @@
+[package]
+name = "captchafox"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.85"
+description = "Verifies tokens of the CaptchaFox widget with siteverify."
+license = "Apache-2.0"
+authors = ["Scoria Labs GmbH"]
+homepage = "https://captchafox.com"
+repository = "https://github.com/CaptchaFox/captchafox-rust"
+keywords = ["captcha", "captchafox", "siteverify"]
+categories = ["web-programming", "authentication"]
+include = ["/src", "/tests", "/CHANGELOG.md", "/LICENSE", "/README.md"]
+
+# The JSON parser is serde_json; serde_core holds its traits, through which the library reads siteverify's answer.
+[dependencies]
+serde_core = { version = "1.0.229", default-features = false, features = ["std"] }
+serde_json = { version = "1.0.154", default-features = false, features = ["std"] }
+# rt: Tokio resolves the host name of siteverify on its blocking pool.
+tokio = { version = "1.54.1", default-features = false, features = ["io-util", "net", "rt", "time"] }
+tokio-rustls = { version = "0.26.6", default-features = false, features = ["ring", "tls12"] }
+webpki-roots = "1.0.12"
+
+[dev-dependencies]
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
